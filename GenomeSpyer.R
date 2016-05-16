@@ -37,7 +37,7 @@
 
 #Define Input Directory and File
 ClusterDataIn <- paste(CrawlerDirectory, CrawlerClusterFile, sep="");
-PlotDataIn <- paste(CrawlerDirectory, PlotDataFile, sep="");
+CyberTDataIn <- paste(CyberTDirectory, CyberTFile, sep="");
 
 
              #####################################################
@@ -45,18 +45,39 @@ PlotDataIn <- paste(CrawlerDirectory, PlotDataFile, sep="");
              #####################################################
 
 
-#Data Positions in CrawlerClusterData output file
-xClClusterProbPos <- 3;
-xClStartGenePosPos <- 4;
-xClEndGenePosPos <- 5;
-    
+#Data Positions in Crawler output file
+xGeClStartIDPos <- 1;
+xGeClEndIDPos <- 2;
+xGeClStartPosPos <- 3;
+xGeClEndPosPos <- 4;
+xGeClPermProbPos <- 5;
+xGeClLengthPos <- 6;
+xGeNamePos <- 7;
+xGePositionPos <- 8;
+xGetStatPos <- 9; 
+xGepValuePos <- 10;
+xGeLogFoldChngPos <- 11;
+xGeIntensityPos <- 12;
+xGeBioSampleNumberPos <- 13; 
+xGeArrayNumberPos <- 14;
+xKuPos <- 15;
+xKsubPos <- 16;
+xPgPos <- 17;
+xPKsubPos <- 18;
+xPKuPos <- 19;
+xPKmiPos <- 20;
+xPKetPos <- 21; 
+xPgKuPos <- 22;
+xPgIKuPos <- 23;
+xPgEKuPos <- 24;
+xPgKsubPos <- 25;
+xPgKmiPos <- 26;
+xPgKetPos <- 27;
 
-#Data Positions in CrawlerGeneData output file
-xPDGenePos <- 1;
-xPDExppValuePos <- 2;
-xPDFoldpValuePos <- 3;
-xPDLogFoldChngPos <- 6;
-
+#Data Positions in CyberT .GeCyTDS output file
+xGenomeIDPos <- 1;
+xGenomePosPos <- 2;
+xGenometStatPos <- 3;
 
 ###############################################################################
 #                             VARIABLE DECLARATION                            #
@@ -71,57 +92,112 @@ xPDLogFoldChngPos <- 6;
 #Input CrawlerClusterData
 xCrawlerClusterTable  <- data.frame(read.delim(ClusterDataIn,
                                        skip=CrawlerHeaderLength));
-#Input CrawlerGeneData
-xPlotDataTable  <- data.frame(read.delim(PlotDataIn,
+#Input Genome Data from CyberT
+xGenomeDataTable  <- data.frame(read.delim(CyberTDataIn,
                                        skip=CrawlerHeaderLength));
 
                  #####  Create Vectors from Input Tables  #####
 
 ##### Data from CrawlerClusterTable
-zClStartGenePos <- as.numeric(as.vector(xCrawlerClusterTable[,
-                                                      xClStartGenePosPos]));
-zClEndGenePos <- as.numeric(as.vector(xCrawlerClusterTable[,
-                                                      xClEndGenePosPos]));   
-zClClusterProb <- as.numeric(as.vector(xCrawlerClusterTable[,
-                                                         xClClusterProbPos]));
 
-###### Data from CrawlerGeneTable
-zPDGenes <- as.character(as.vector(xPlotDataTable[, xPDGenePos]));
-zPDExppValue <- as.numeric(as.vector(xPlotDataTable[, xPDExppValuePos]));
-zPDFoldpValue <- as.numeric(as.vector(xPlotDataTable[,
-                                                      xPDFoldpValuePos]));
-zPDLogFoldChng <- as.numeric(as.vector(xPlotDataTable[,
-                                                        xPDLogFoldChngPos]));
+zClStartID <- as.character(as.vector(xCrawlerClusterTable[,
+                                                      xGeClStartIDPos]));
+zClEndID <- as.character(as.vector(xCrawlerClusterTable[,
+                                                      xGeClEndIDPos]));
+zGeClStartPos <- as.numeric(as.vector(xCrawlerClusterTable[,
+                                                      xGeClStartPosPos]));
+zGeClEndPos <- as.numeric(as.vector(xCrawlerClusterTable[,
+                                                      xGeClEndPosPos]));
+zGeClPermProb <- as.numeric(as.vector(xCrawlerClusterTable[,
+                                                           xGeClPermProbPos]));
+zGeClLength <- as.numeric(as.vector(xCrawlerClusterTable[,
+                                                         xGeClLengthPos]));
+zGeName <- as.character(as.vector(xCrawlerClusterTable[,
+                                                      xGeNamePos]));
+zGePosition <- as.numeric(as.vector(xCrawlerClusterTable[,
+                                                         xGePositionPos]));
+zGetStat <- as.numeric(as.vector(xCrawlerClusterTable[,
+                                                      xGetStatPos]));
+zGepValue <- as.numeric(as.vector(xCrawlerClusterTable[,
+                                                       xGepValuePos]));
+zGeLogFoldChng <- as.numeric(as.vector(xCrawlerClusterTable[,
+                                                      xGeLogFoldChngPos]));
+zGeIntensity <- as.numeric(as.vector(xCrawlerClusterTable[,
+                                                      xGeIntensityPos]));
+zGeBioSampleNumber <- as.numeric(as.vector(xCrawlerClusterTable[,
+                                                      xGeBioSampleNumberPos]));
+zGeArrayNumber <- as.numeric(as.vector(xCrawlerClusterTable[,
+                                                      xGeArrayNumberPos]));
+zKu <- as.numeric(as.vector(xCrawlerClusterTable[, xKuPos]));
+zKsub <- as.numeric(as.vector(xCrawlerClusterTable[, xKsubPos]));
+zPg <- as.numeric(as.vector(xCrawlerClusterTable[, xPgPos]));
+zPKsub <- as.numeric(as.vector(xCrawlerClusterTable[, xPKsubPos]));
+zPKu <- as.numeric(as.vector(xCrawlerClusterTable[, xPKuPos]));
+zPKmi <- as.numeric(as.vector(xCrawlerClusterTable[, xPKmiPos]));
+zPKet <- as.numeric(as.vector(xCrawlerClusterTable[, xPKetPos]));
+zPgKu <- as.numeric(as.vector(xCrawlerClusterTable[, xPgKuPos]));
+zPgIKu <- as.numeric(as.vector(xCrawlerClusterTable[, xPgIKuPos]));
+zPgEKu <- as.numeric(as.vector(xCrawlerClusterTable[, xPgEKuPos]));
+zPgKsub <- as.numeric(as.vector(xCrawlerClusterTable[, xPgKsubPos]));
+zPgKmi <- as.numeric(as.vector(xCrawlerClusterTable[, xPgKmiPos]));
+zPgKet <- as.numeric(as.vector(xCrawlerClusterTable[, xPgKetPos]));
+
+
+###### Data Genome Data from xGenomeDataTable
+zGenomeID <- as.character(as.vector(xGenomeDataTable[, xGenomeIDPos]));
+zGenomePos <- as.numeric(as.vector(xGenomeDataTable[, xGenomePosPos]));
+zGenometStat <- as.numeric(as.vector(xGenomeDataTable[, xGenometStatPos]));
+
 
 ###############################################################################
 #                               MAIN BODY                                     #
 ###############################################################################
-zPDIndex <- 1:length(zPDGenes);
 
-PlotStartPos <- zPDIndex[as.logical(match(zPDGenes,
-                                             PlotStartGene, nomatch=0))];
-PlotEndPos <- zPDIndex[as.logical(match(zPDGenes, PlotEndGene,
-                                               nomatch=0))];
-    
-PlotGenes <- zPDGenes[PlotStartPos:PlotEndPos];
+##Create filter to select all genes present in the cluster from the cluster file
+ClusterFilter1 <- match(zClStartID, ClusterStartGene, nomatch=0);
 
+ClusterFilter2 <- match(zClEndID, ClusterEndGene, nomatch=0);
 
-#Set Plot Colors for Genes
-if (BGGenes) {
-  Color <- rep("grey30", length(zPDGenes));
+ClusterFilter <- as.logical(ClusterFilter1 * ClusterFilter2);
+
+ClusterPresentGenes <- zGeName[ClusterFilter];
+
+## From an ordered  genome list of all genes in the genome find all the genes
+## in a cluster plus extra genes around for plotting data                  
+
+ClusterStartPos <- zGenomePos[as.logical(match(zGenomeID,
+                                            ClusterStartGene, nomatch=0))];
+if ((ClusterStartPos-ExtraGenes) > 0) {
+ PlotStartPos <- ClusterStartPos-ExtraGenes;
 } else {
-  Color <- rep("black", length(zPDGenes));
+    PlotStartPos <- 1;
 }
 
-
-if (ExpGenes) {    
-  Color[which(zPDExppValue <= PlotGeneCut)] <-  "blue";   
+ClusterEndPos <- zGenomePos[as.logical(match(zGenomeID, ClusterEndGene,
+                                               nomatch=0))];
+if ((ClusterEndPos+ExtraGenes) < zGenomePos[length(zGenomePos)]) {
+    PlotEndPos <- ClusterEndPos+ExtraGenes;
+} else {
+    PlotEndPos <- zGenomePos[length(zGenomePos)];
 }
 
+#ClusterGenes <- zGenomeID[ClusterStartPos:ClusterEndPos];
+PlotGenes <- zGenomeID[PlotStartPos:PlotEndPos];
+PlotGenePos <- zGenomePos[PlotStartPos:PlotEndPos];
 
-if (FoldGenes) {
-  Color[which(zPDFoldpValue <= PlotGeneCut)] <-  "green";
-}
+#### Set Plot Colors for Genes
+Color <- rep("grey30", length(PlotGenes));
+
+Color[which(as.logical(match(PlotGenes, ClusterPresentGenes,
+                             nomatch=0)))] <- "green";
+
+Color[which(zGenometStat[PlotGenePos] == 0)] <- "red";
+
+
+
+
+
+############################ Edited to here!!!!!!!!!!!!!!!!!!!!!
 
 
                            ##### Plot Data #####

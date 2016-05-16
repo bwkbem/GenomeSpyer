@@ -1,8 +1,8 @@
-PlotClusterCut <- 0.05;   #Must be <= 0.15
-PlotGeneCut <- 0.05;      #Must be <= 0.15
 
-PlotStartGene <- "SPy0002";
-PlotEndGene <- "SPy2217";
+ClusterStartGene <- "SPy0025";
+ClusterEndGene <- "SPy0040";
+
+ExtraGenes <- 2;
 
 PlotTitle <- "";
 
@@ -12,11 +12,6 @@ Interactive <- FALSE;
 OutToFile <- FALSE;
 FileTitle <- "Spyer";
 
-
-FoldGenes <- TRUE;      #Green Bars
-ExpGenes <- TRUE;       #Blue Bars
-BGGenes <- TRUE;        #Grey bars
-PlotCluster <- TRUE;    #Yellow Rectangles
 RectHeight <- 0.2;
 
 PlotWidth <- 11;
@@ -24,10 +19,14 @@ PlotHeight <- 8;
 
             ################# INPUT / OUTPUT PATHS #################
 
-CrawlerDirectory <- "/home/user/SF370Analysis/Data/GenomeCrawlerSuite/";
+CrawlerDirectory <- "/home/anon/Projects/Data/SPyM1/Development/DeleuzeCrawl/";
 
-CrawlerClusterFile <- "CuratedClusters.BayCl";
-PlotDataFile <- "Gene.BayPDM";       
-CrawlerHeaderLength <- 9;                #DO NOT EDIT  
+CrawlerClusterFile <- "uG8bA8P2L5.GeClGC";
+#PlotDataFile <- "Gene.BayPDM";       
+CrawlerHeaderLength <- 8;                #DO NOT EDIT  
 
-OutputDirectory <- "/home/user/SF370Analysis/Data/GenomeCrawlerSuite/";
+CyberTDirectory <- "/home/anon/Projects/Data/SPyM1/Development/CyberT/Unmatched/"
+CyberTFile <- "uG8bA4P2L4.GeCyTDS"
+CyberTHeaderLength <- 8;
+
+OutputDirectory <- "/home/anon/Projects/Data/SPyM1/Development/DeleuzeCrawl/";
