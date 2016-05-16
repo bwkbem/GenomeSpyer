@@ -1,18 +1,19 @@
 
-ClusterStartGene <- "SPy0025";
-ClusterEndGene <- "SPy0040";
+ClusterStartGene <- "SPy0047";
+ClusterEndGene <- "SPy0072";
 
-ExtraGenes <- 2;
+ExtraGenes <- 8;
 
-PlotTitle <- "";
+#PlotTitle <- "";  #created in plot
 
+PlotCluster <- TRUE;
 OutToScreen <- TRUE;
 Interactive <- FALSE;
 
 OutToFile <- FALSE;
 FileTitle <- "Spyer";
 
-RectHeight <- 0.2;
+RectHeight <- 0.015;
 
 PlotWidth <- 11;
 PlotHeight <- 8;

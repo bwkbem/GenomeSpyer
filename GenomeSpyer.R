@@ -78,6 +78,7 @@ xPgKetPos <- 27;
 xGenomeIDPos <- 1;
 xGenomePosPos <- 2;
 xGenometStatPos <- 3;
+xGenomeLogFoldChngPos <- 7;
 
 ###############################################################################
 #                             VARIABLE DECLARATION                            #
@@ -104,10 +105,10 @@ zClStartID <- as.character(as.vector(xCrawlerClusterTable[,
                                                       xGeClStartIDPos]));
 zClEndID <- as.character(as.vector(xCrawlerClusterTable[,
                                                       xGeClEndIDPos]));
-zGeClStartPos <- as.numeric(as.vector(xCrawlerClusterTable[,
-                                                      xGeClStartPosPos]));
-zGeClEndPos <- as.numeric(as.vector(xCrawlerClusterTable[,
-                                                      xGeClEndPosPos]));
+#zGeClStartPos <- as.numeric(as.vector(xCrawlerClusterTable[,
+ #                                                     xGeClStartPosPos]));
+#zGeClEndPos <- as.numeric(as.vector(xCrawlerClusterTable[,
+ #                                                     xGeClEndPosPos]));
 zGeClPermProb <- as.numeric(as.vector(xCrawlerClusterTable[,
                                                            xGeClPermProbPos]));
 zGeClLength <- as.numeric(as.vector(xCrawlerClusterTable[,
@@ -147,7 +148,11 @@ zPgKet <- as.numeric(as.vector(xCrawlerClusterTable[, xPgKetPos]));
 zGenomeID <- as.character(as.vector(xGenomeDataTable[, xGenomeIDPos]));
 zGenomePos <- as.numeric(as.vector(xGenomeDataTable[, xGenomePosPos]));
 zGenometStat <- as.numeric(as.vector(xGenomeDataTable[, xGenometStatPos]));
+zGenomeLogFoldChng <- as.numeric(as.vector(xGenomeDataTable[,
+                                                    xGenomeLogFoldChngPos]));
 
+#rm(xCrawlerClusterTable);
+#rm(xGenomeDataTable);
 
 ###############################################################################
 #                               MAIN BODY                                     #
@@ -160,52 +165,116 @@ ClusterFilter2 <- match(zClEndID, ClusterEndGene, nomatch=0);
 
 ClusterFilter <- as.logical(ClusterFilter1 * ClusterFilter2);
 
+if (sum(ClusterFilter) == 0) {
+    ClusterFound <- FALSE;
+} else {
+    ClusterFound <- TRUE;
+}
+
 ClusterPresentGenes <- zGeName[ClusterFilter];
 
+ClPermProb <- zGeClPermProb[ClusterFilter];
+
+if (ClusterFound) {
+    if (ClPermProb[1] == 0) {
+    #Find Total Permutations from .GeClGC file header
+        xPermTotScan <- scan(file=ClusterDataIn, what=character(0), sep="\t",
+                             nlines=CrawlerHeaderLength);
+        xPermTotString <- grep("Total Permutations = ", xPermTotScan,
+                               value=TRUE);
+
+        if (length(xPermTotString) != 0) {
+            CrawlPermTotFound <- TRUE;
+            xStringSplit <- unlist(strsplit(xPermTotString, "= "));
+            CrawlPermTot <- as.character(xStringSplit[2]); 
+        } else {
+            CrawlPermTotFound <- FALSE;
+            CrawlPermTot <- "NotFound";
+        }
+        if (CrawlPermTotFound) {
+            TotalPermutations <- as.numeric(CrawlPermTot);
+            ClPermProb <- paste("<", 1/TotalPermutations, sep="");
+        } else {
+            ClPermProb <- "<?";
+        }
+    } else {
+        ClPermProb <- as.character(ClPermProb[1]);
+    }
+} else {
+    ClPermProb <- "Cluster Not Found";
+}
 ## From an ordered  genome list of all genes in the genome find all the genes
 ## in a cluster plus extra genes around for plotting data                  
 
-ClusterStartPos <- zGenomePos[as.logical(match(zGenomeID,
+ClGenomeStartPos <- zGenomePos[as.logical(match(zGenomeID,
                                             ClusterStartGene, nomatch=0))];
-if ((ClusterStartPos-ExtraGenes) > 0) {
- PlotStartPos <- ClusterStartPos-ExtraGenes;
+
+ClGenomeEndPos <- zGenomePos[as.logical(match(zGenomeID, ClusterEndGene,
+                                               nomatch=0))];
+
+
+if ((ClGenomeStartPos-ExtraGenes) > 0) {
+ PlotStartPos <- ClGenomeStartPos-ExtraGenes;
 } else {
     PlotStartPos <- 1;
 }
 
-ClusterEndPos <- zGenomePos[as.logical(match(zGenomeID, ClusterEndGene,
-                                               nomatch=0))];
-if ((ClusterEndPos+ExtraGenes) < zGenomePos[length(zGenomePos)]) {
-    PlotEndPos <- ClusterEndPos+ExtraGenes;
+
+if ((ClGenomeEndPos+ExtraGenes) < zGenomePos[length(zGenomePos)]) {
+    PlotEndPos <- ClGenomeEndPos+ExtraGenes;
 } else {
     PlotEndPos <- zGenomePos[length(zGenomePos)];
 }
 
-#ClusterGenes <- zGenomeID[ClusterStartPos:ClusterEndPos];
 PlotGenes <- zGenomeID[PlotStartPos:PlotEndPos];
 PlotGenePos <- zGenomePos[PlotStartPos:PlotEndPos];
 
+
 #### Set Plot Colors for Genes
-Color <- rep("grey30", length(PlotGenes));
+Color <- rep("blue", length(PlotGenes));
 
 Color[which(as.logical(match(PlotGenes, ClusterPresentGenes,
                              nomatch=0)))] <- "green";
 
 Color[which(zGenometStat[PlotGenePos] == 0)] <- "red";
 
+                         ##################### 
+                         ##### Plot Data #####
+                         #####################
+
+######################## Log Fold Change #####################################
 
 
 
+PlotLogFoldChng <- 0;
+ClusterLogFoldChng <- zGeLogFoldChng[ClusterFilter];
 
-############################ Edited to here!!!!!!!!!!!!!!!!!!!!!
 
+for (i in 1:length(PlotGenes)) {
+    if (Color[i] == "green") {
+        ClLogFoldFilter <- as.logical(match(ClusterPresentGenes, PlotGenes[i],
+                                                                   nomatch=0));
+        PlotLogFoldChng <- c(PlotLogFoldChng,
+                                        ClusterLogFoldChng[ClLogFoldFilter]);
 
-                           ##### Plot Data #####
+    } else {
+        if (Color[i] == "blue") {
+            GeLogFoldFilter <- as.logical(match(zGenomeID, PlotGenes[i],
+                                                                   nomatch=0));
+            PlotLogFoldChng <- c(PlotLogFoldChng,
+                                 zGenomeLogFoldChng[GeLogFoldFilter]);
+            } else {
+                PlotLogFoldChng <- c(PlotLogFoldChng, 0);
+            }
+    }
+}
 
-ylo <- trunc(min(zPDLogFoldChng[PlotStartPos:PlotEndPos])) - 1;
+PlotLogFoldChng <- PlotLogFoldChng[2:length(PlotLogFoldChng)];
+
+ylo <- trunc(min(PlotLogFoldChng)) - 1;
 if (ylo > -1) {ylo <- -1}
 
-yhigh <- trunc(max(zPDLogFoldChng[PlotStartPos:PlotEndPos])) + 1;
+yhigh <- trunc(max(PlotLogFoldChng)) + 1;
 if (yhigh < 1) {yhigh <- 1}
 
 if (OutToScreen) {
@@ -214,12 +283,12 @@ if (OutToScreen) {
     col.main="white");
 
   PlotGenesIndex <- 1:length(PlotGenes);
-  plot(PlotGenesIndex, zPDLogFoldChng[PlotStartPos:PlotEndPos],
-       col=Color[PlotStartPos:PlotEndPos], type='h', bty="n", xlab="Genes",
-       xaxt='n', xaxp=c(1,length(PlotGenes),4), ylab="Log Fold Change",
+  plot(PlotGenesIndex, PlotLogFoldChng,
+       col=Color, lwd=4, type='h', bty="n", xlab="Genes", xaxt='n',
+       xaxp=c(1,length(PlotGenes),4), ylab="Log Fold Change",
        ylim=c(ylo, yhigh), col.lab="white");
-  title(main=PlotTitle, font=1);    
-  if (length(PlotGenes) > 15) {
+  title(main=paste("KpermProb = ", ClPermProb , sep=" "), font=1);    
+  if (length(PlotGenes) > 25) {
     Interval <- trunc(length(PlotGenes)/5);
     PlotLabels <- PlotGenes[c(1,1:4*Interval, length(PlotGenes))];
     axis(1, at=c(1, 1:4*Interval, length(PlotGenes)), labels=PlotLabels);
@@ -230,24 +299,25 @@ if (OutToScreen) {
     axis(1, at=c(1:length(PlotGenes)), labels=PlotLabels);
   }
   
-  if (PlotCluster) {    
-    for (i in 1:length(zClClusterProb)) {
-      if (zClClusterProb[i] <= PlotClusterCut) {
-        rect(zClStartGenePos[i]-PlotStartPos+1,
-           -RectHeight,
-           zClEndGenePos[i]-PlotStartPos+1,
-           RectHeight,
-           border="yellow", col="yellow");
-      
-      }
-    }
-  }
   abline(h=0, col="white");    
   abline(h=1, col="white", lty=2);
   abline(h=-1, col="white", lty=2);
+
+  if (PlotCluster) {    
+      rect(ClGenomeStartPos-PlotStartPos+1,
+           -RectHeight,
+           ClGenomeEndPos-PlotStartPos+1,
+           RectHeight,
+           border="yellow", col="yellow");
+  }
+
+  PlotPos <- 1:length(PlotGenes);
+  AbsentGenesPos <- PlotPos[as.logical(match(Color, "red", nomatch=0))];
+  AbsentGeneValues <- rep(0, length(AbsentGenesPos));
+  points(AbsentGenesPos, AbsentGeneValues, pch=4, lwd=2, cex=2, col="red")
+  
   if(Interactive) {
-    identify(PlotGenesIndex, zPDLogFoldChng[PlotStartPos:PlotEndPos], PlotGenes,
-                                         col="white");  
+    identify(PlotGenesIndex, PlotLogFoldChng, PlotGenes, col="white");  
   }
 }
 
@@ -295,7 +365,11 @@ if (OutToFile) {
   dev.off()
 }
 
+############# Plot PgKu ##############
+
+if (ClusterFound) {
 
 
+}
 rm(list=ls());
 
