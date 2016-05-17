@@ -1,163 +1,20 @@
-#This software is a rerelease of GenomePlotterGC.R module of the Genome Crawler
-#Suite with alterations in the input and ouput format in order to improve
-#transition between modules of eMESS.
 
-#No part of this text or software may be used or reproduced in any matter
-#whatsoever without written permission, except in the case of brief quotations
-#embodied in critical articles of or for reviews.  For information address
-#Brian W. Kirk (bwkbem@yahoo.com).
-#Software Copyright (C) June 2003  Brian W. Kirk
-#Form/Text Copyright (C) June 2003  Brian W. Kirk
-#Released for use with R v1.5.1 (C)
-
-#This program is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU General Public License for more details.
-
-          
-###############################################################################
-#                                FUNCTIONS                                    #
-###############################################################################
-
-
-###############################################################################
-#                           CONSTANT DECLARATION                              #
-###############################################################################
-
-#CONSTANTS AND VARIABLES OF TEMPORARY USE BEGIN WITH "x, y, or z" AND ALL
-#USER DEFINED FUNCTIONS BEGIN WITH "f" or "g" IN ORDER TO FACILITATE REMOVABLE
-#FROM MEMORY.  WHEN USING VARIABLES WITH THESE RESERVED INTIAL LETTERS,
-#NEAREST CLEANUP SHOULD BE IDENTIFIED TO INSURE PROPER PERMANENCY
-
-
-                 ############################################
-                 #######  DEFINE PERMANENT CONSTANTS  #######
-                 ############################################
-
-#Define Input Directory and File
-ClusterDataIn <- paste(CrawlerDirectory, CrawlerClusterFile, sep="");
-CyberTDataIn <- paste(CyberTDirectory, CyberTFile, sep="");
-
-
-             #####################################################
-             ##########  DEFINE TEMPORARY CONSTANTS  #############
-             #####################################################
-
-
-#Data Positions in Crawler output file
-xGeClStartIDPos <- 1;
-xGeClEndIDPos <- 2;
-xGeClStartPosPos <- 3;
-xGeClEndPosPos <- 4;
-xGeClPermProbPos <- 5;
-xGeClLengthPos <- 6;
-xGeNamePos <- 7;
-xGePositionPos <- 8;
-xGetStatPos <- 9; 
-xGepValuePos <- 10;
-xGeLogFoldChngPos <- 11;
-xGeIntensityPos <- 12;
-xGeBioSampleNumberPos <- 13; 
-xGeArrayNumberPos <- 14;
-xKuPos <- 15;
-xKsubPos <- 16;
-xPgPos <- 17;
-xPKsubPos <- 18;
-xPKuPos <- 19;
-xPKmiPos <- 20;
-xPKetPos <- 21; 
-xPgKuPos <- 22;
-xPgIKuPos <- 23;
-xPgEKuPos <- 24;
-xPgKsubPos <- 25;
-xPgKmiPos <- 26;
-xPgKetPos <- 27;
-
-#Data Positions in CyberT .GeCyTDS output file
-xGenomeIDPos <- 1;
-xGenomePosPos <- 2;
-xGenometStatPos <- 3;
-xGenomeLogFoldChngPos <- 7;
-
-###############################################################################
-#                             VARIABLE DECLARATION                            #
-###############################################################################
-
-#CONSTANTS AND VARIABLES OF TEMPORARY USE BEGIN WITH "x", "y", or "z" AND ALL
-#USER DEFINED FUNCTIONS BEGIN WITH "f" or "g" IN ORDER TO FACILITATE REMOVABLE
-#FROM MEMORY.  WHEN USING VARIABLES WITH THESE RESERVED INTIAL LETTERS,
-#NEAREST CLEANUP SHOULD BE IDENTIFIED TO INSURE PROPER PERMANCY
-
-
-#Input CrawlerClusterData
-xCrawlerClusterTable  <- data.frame(read.delim(ClusterDataIn,
-                                       skip=CrawlerHeaderLength));
-#Input Genome Data from CyberT
-xGenomeDataTable  <- data.frame(read.delim(CyberTDataIn,
-                                       skip=CrawlerHeaderLength));
-
-                 #####  Create Vectors from Input Tables  #####
-
-##### Data from CrawlerClusterTable
-
-zClStartID <- as.character(as.vector(xCrawlerClusterTable[,
-                                                      xGeClStartIDPos]));
-zClEndID <- as.character(as.vector(xCrawlerClusterTable[,
-                                                      xGeClEndIDPos]));
-#zGeClStartPos <- as.numeric(as.vector(xCrawlerClusterTable[,
- #                                                     xGeClStartPosPos]));
-#zGeClEndPos <- as.numeric(as.vector(xCrawlerClusterTable[,
- #                                                     xGeClEndPosPos]));
-zGeClPermProb <- as.numeric(as.vector(xCrawlerClusterTable[,
-                                                           xGeClPermProbPos]));
-zGeClLength <- as.numeric(as.vector(xCrawlerClusterTable[,
-                                                         xGeClLengthPos]));
-zGeName <- as.character(as.vector(xCrawlerClusterTable[,
-                                                      xGeNamePos]));
-zGePosition <- as.numeric(as.vector(xCrawlerClusterTable[,
-                                                         xGePositionPos]));
-zGetStat <- as.numeric(as.vector(xCrawlerClusterTable[,
-                                                      xGetStatPos]));
-zGepValue <- as.numeric(as.vector(xCrawlerClusterTable[,
-                                                       xGepValuePos]));
-zGeLogFoldChng <- as.numeric(as.vector(xCrawlerClusterTable[,
-                                                      xGeLogFoldChngPos]));
-zGeIntensity <- as.numeric(as.vector(xCrawlerClusterTable[,
-                                                      xGeIntensityPos]));
-zGeBioSampleNumber <- as.numeric(as.vector(xCrawlerClusterTable[,
-                                                      xGeBioSampleNumberPos]));
-zGeArrayNumber <- as.numeric(as.vector(xCrawlerClusterTable[,
-                                                      xGeArrayNumberPos]));
-zKu <- as.numeric(as.vector(xCrawlerClusterTable[, xKuPos]));
-zKsub <- as.numeric(as.vector(xCrawlerClusterTable[, xKsubPos]));
-zPg <- as.numeric(as.vector(xCrawlerClusterTable[, xPgPos]));
-zPKsub <- as.numeric(as.vector(xCrawlerClusterTable[, xPKsubPos]));
-zPKu <- as.numeric(as.vector(xCrawlerClusterTable[, xPKuPos]));
-zPKmi <- as.numeric(as.vector(xCrawlerClusterTable[, xPKmiPos]));
-zPKet <- as.numeric(as.vector(xCrawlerClusterTable[, xPKetPos]));
-zPgKu <- as.numeric(as.vector(xCrawlerClusterTable[, xPgKuPos]));
-zPgIKu <- as.numeric(as.vector(xCrawlerClusterTable[, xPgIKuPos]));
-zPgEKu <- as.numeric(as.vector(xCrawlerClusterTable[, xPgEKuPos]));
-zPgKsub <- as.numeric(as.vector(xCrawlerClusterTable[, xPgKsubPos]));
-zPgKmi <- as.numeric(as.vector(xCrawlerClusterTable[, xPgKmiPos]));
-zPgKet <- as.numeric(as.vector(xCrawlerClusterTable[, xPgKetPos]));
-
-
-###### Data Genome Data from xGenomeDataTable
-zGenomeID <- as.character(as.vector(xGenomeDataTable[, xGenomeIDPos]));
-zGenomePos <- as.numeric(as.vector(xGenomeDataTable[, xGenomePosPos]));
-zGenometStat <- as.numeric(as.vector(xGenomeDataTable[, xGenometStatPos]));
-zGenomeLogFoldChng <- as.numeric(as.vector(xGenomeDataTable[,
-                                                    xGenomeLogFoldChngPos]));
-
-#rm(xCrawlerClusterTable);
-#rm(xGenomeDataTable);
+####  Run SyerLoad.R first to load files !!!!!!!!!!!!!!!!!!!!!!!
 
 ###############################################################################
 #                               MAIN BODY                                     #
 ###############################################################################
 
+OutToFile <- TRUE;
+
+if (OutToScreen) {
+    OutToFile <- FALSE;
+}
+
+xStringSplit <- unlist(strsplit(ClusterEndGene, "SPy"));
+FileTitle <- paste(as.character(ClusterStartGene), "to",
+                   as.character(xStringSplit[2]), sep="");
+    
 ##Create filter to select all genes present in the cluster from the cluster file
 ClusterFilter1 <- match(zClStartID, ClusterStartGene, nomatch=0);
 
@@ -277,15 +134,12 @@ yhigh <- trunc(max(PlotLogFoldChng)) + 1;
 if (yhigh < 1) {yhigh <- 1}
 
 if (OutToScreen) {
-    OutToFile <- FALSE;
+
+
     x11(width=PlotWidth, height=PlotHeight);
     par(bg="black", fg="white", col.axis="white", col.lab="white", 
         col.main="white");
-
-    chh <-par()$cxy[2];
-    chw <-par()$cxy[2];
     par(mar=c(5,5,5,5), omi=c(0.5,0.5,0.5,0.5));
-
     par(mfrow=c(2,4));
 
   
@@ -293,9 +147,9 @@ if (OutToScreen) {
     plot(PlotGenesIndex, PlotLogFoldChng,
          col=Color, lwd=4, type='h', bty="n", xlab="Genes", xaxt='n',
          xaxp=c(1,length(PlotGenes),4), ylab="Log Fold Change",
-         ylim=c(ylo, yhigh), col.lab="white");
+         ylim=c(ylo, yhigh), col.lab="white", cex.lab=1.5);
     title(main=paste("Cluster ", ClusterStartGene, "-", ClusterEndGene,
-              "\n PKu(perm) = ", ClPermProb, sep=" "), font=1);
+              "\n PKu(perm) = ", ClPermProb, sep=" "), cex.main=1.5);
 
     if (length(PlotGenes) > 25) {
         Interval <- trunc(length(PlotGenes)/5);
@@ -334,18 +188,22 @@ if (OutToScreen) {
 if (OutToFile) {
 
     postscript(file=paste(OutputDirectory, FileTitle, ".eps",
-                   sep=""), horizontal=TRUE, onefile=TRUE);
+                   sep=""), horizontal=TRUE, onefile=FALSE);
 
     par(bg="black", fg="white", col.axis="white", col.lab="white", 
         col.main="white");
 
+    par(mar=c(5,5,5,5), omi=c(0.5,0.5,0.5,0.5));
+    par(mfrow=c(2,4));
+
+    
     PlotGenesIndex <- 1:length(PlotGenes);
     plot(PlotGenesIndex, PlotLogFoldChng,
-         col=Color, lwd=4, type='h', bty="n", xlab="Genes", xaxt='n',
+         col=Color, lwd=2, type='h', bty="n", xlab="Genes", xaxt='n',
          xaxp=c(1,length(PlotGenes),4), ylab="Log Fold Change",
-         ylim=c(ylo, yhigh), col.lab="white");
+         ylim=c(ylo, yhigh), col.lab="white", cex.lab=1.5);
     title(main=paste("Cluster ", ClusterStartGene, "-", ClusterEndGene,
-              "\n PKu(perm) = ", ClPermProb, sep=" "), font=1);
+              "\n PKu(perm) = ", ClPermProb, sep=" "), font=2, cex.main=1.5);
 
 
     if (length(PlotGenes) > 25) {
@@ -417,10 +275,11 @@ if (ClusterFound) {
         plot(PlotGenesIndex, PlotPKumPg,
              col=Color, lwd=4, type='h', bty="n", xlab="Genes", xaxt='n',
              xaxp=c(1,length(PlotGenes),4), ylab="PKu - Pg",
-             ylim=c(ylo, yhigh), col.lab="white");
+             ylim=c(ylo, yhigh), col.lab="white", cex.lab=1.5);
         title(main=paste("Cluster ", ClusterStartGene, "-",
                   ClusterEndGene, "\n PKu = ", round(ClusterPKu[1], 5),
-                                                           sep=""), font=1);
+                  sep=""), font=2, cex.main=1.5);
+        
         if (length(PlotGenes) > 25) {
             Interval <- trunc(length(PlotGenes)/5);
             PlotLabels <- PlotGenes[c(1,1:4*Interval, length(PlotGenes))];
@@ -473,11 +332,13 @@ if (ClusterFound) {
 
         PlotGenesIndex <- 1:length(PlotGenes);
         plot(PlotGenesIndex, PlotPKumPg,
-             col=Color, lwd=4, type='h', bty="n", xlab="Genes", xaxt='n',
+             col=Color, lwd=2, type='h', bty="n", xlab="Genes", xaxt='n',
              xaxp=c(1,length(PlotGenes),4), ylab="PKu - Pg",
-             ylim=c(ylo, yhigh), col.lab="white");
+             ylim=c(ylo, yhigh), col.lab="white", cex.lab=1.5);
         title(main=paste("Cluster ", ClusterStartGene, "-", ClusterEndGene,
-                  "\n PKu = ", round(ClusterPKu[1], 5), sep=""), font=1);
+                  "\n PKu = ", round(ClusterPKu[1], 5), sep=""), font=2,
+                  cex.main=1.5);
+        
         if (length(PlotGenes) > 25) {
             Interval <- trunc(length(PlotGenes)/5);
             PlotLabels <- PlotGenes[c(1,1:4*Interval, length(PlotGenes))];
@@ -561,11 +422,12 @@ if (ClusterFound) {
         PlotGenesIndex <- 1:length(PlotGenes);
         plot(PlotGenesIndex, PlotPgKu,
              col=Color, lwd=4, type='h', bty="n", xlab="Genes", xaxt='n',
-             xaxp=c(1,length(PlotGenes),4), ylab="P(g|Ku)",
-             ylim=c(ylo, yhigh), col.lab="white");
+             xaxp=c(1,length(PlotGenes),4), ylab="P(g | Ku)",
+             ylim=c(ylo, yhigh), col.lab="white", cex.lab=1.5);
         title(main=paste("Cluster ", ClusterStartGene, "-",
                   ClusterEndGene, "\n PKu = ", round(ClusterPKu[1], 5),
-                                                           sep=""), font=1);
+                  sep=""), font=2, cex.main=1.5);
+        
         if (length(PlotGenes) > 25) {
             Interval <- trunc(length(PlotGenes)/5);
             PlotLabels <- PlotGenes[c(1,1:4*Interval, length(PlotGenes))];
@@ -627,11 +489,13 @@ if (ClusterFound) {
 
         PlotGenesIndex <- 1:length(PlotGenes);
         plot(PlotGenesIndex, PlotPgKu,
-             col=Color, lwd=4, type='h', bty="n", xlab="Genes", xaxt='n',
-             xaxp=c(1,length(PlotGenes),4), ylab="P(g|Ku)",
-             ylim=c(ylo, yhigh), col.lab="white");
+             col=Color, lwd=2, type='h', bty="n", xlab="Genes", xaxt='n',
+             xaxp=c(1,length(PlotGenes),4), ylab="P(g | Ku)",
+             ylim=c(ylo, yhigh), col.lab="white", cex.lab=1.5);
         title(main=paste("Cluster ", ClusterStartGene, "-", ClusterEndGene,
-                  "\n PKu = ", round(ClusterPKu[1], 5), sep=""), font=1);
+                  "\n PKu = ", round(ClusterPKu[1], 5), sep=""), font=2,
+                  cex.main=1.5);
+
         if (length(PlotGenes) > 25) {
             Interval <- trunc(length(PlotGenes)/5);
             PlotLabels <- PlotGenes[c(1,1:4*Interval, length(PlotGenes))];
@@ -724,10 +588,11 @@ if (ClusterFound) {
         plot(PlotGenesIndex, PlotPgIKu,
              col=Color, lwd=4, type='h', bty="n", xlab="Genes", xaxt='n',
              xaxp=c(1,length(PlotGenes),4), ylab="PgIKu",
-             ylim=c(ylo, yhigh), col.lab="white");
+             ylim=c(ylo, yhigh), col.lab="white", cex.lab=1.5);
         title(main=paste("Cluster ", ClusterStartGene, "-",
                   ClusterEndGene, "\n PKu = ", round(ClusterPKu[1], 5),
-                                                           sep=""), font=1);
+                  sep=""), font=2, cex.main=1.5);
+        
         if (length(PlotGenes) > 25) {
             Interval <- trunc(length(PlotGenes)/5);
             PlotLabels <- PlotGenes[c(1,1:4*Interval, length(PlotGenes))];
@@ -789,11 +654,13 @@ if (ClusterFound) {
 
         PlotGenesIndex <- 1:length(PlotGenes);
         plot(PlotGenesIndex, PlotPgIKu,
-             col=Color, lwd=4, type='h', bty="n", xlab="Genes", xaxt='n',
+             col=Color, lwd=2, type='h', bty="n", xlab="Genes", xaxt='n',
              xaxp=c(1,length(PlotGenes),4), ylab="PgIKu",
-             ylim=c(ylo, yhigh), col.lab="white");
+             ylim=c(ylo, yhigh), col.lab="white", cex.lab=1.5);
         title(main=paste("Cluster ", ClusterStartGene, "-", ClusterEndGene,
-                  "\n PKu = ", round(ClusterPKu[1], 5), sep=""), font=1);
+                  "\n PKu = ", round(ClusterPKu[1], 5), sep=""), font=2,
+                  cex.main=1.5);
+        
         if (length(PlotGenes) > 25) {
             Interval <- trunc(length(PlotGenes)/5);
             PlotLabels <- PlotGenes[c(1,1:4*Interval, length(PlotGenes))];
@@ -887,10 +754,11 @@ if (ClusterFound) {
         plot(PlotGenesIndex, PlotPgEKu,
              col=Color, lwd=4, type='h', bty="n", xlab="Genes", xaxt='n',
              xaxp=c(1,length(PlotGenes),4), ylab="PgEKu",
-             ylim=c(ylo, yhigh), col.lab="white");
+             ylim=c(ylo, yhigh), col.lab="white", cex.lab=1.5);
         title(main=paste("Cluster ", ClusterStartGene, "-",
                   ClusterEndGene, "\n PKu = ", round(ClusterPKu[1], 5),
-                                                           sep=""), font=1);
+                                                 sep=""), font=2, cex.main=1.5);
+
         if (length(PlotGenes) > 25) {
             Interval <- trunc(length(PlotGenes)/5);
             PlotLabels <- PlotGenes[c(1,1:4*Interval, length(PlotGenes))];
@@ -951,11 +819,13 @@ if (ClusterFound) {
 
         PlotGenesIndex <- 1:length(PlotGenes);
         plot(PlotGenesIndex, PlotPgEKu,
-             col=Color, lwd=4, type='h', bty="n", xlab="Genes", xaxt='n',
+             col=Color, lwd=2, type='h', bty="n", xlab="Genes", xaxt='n',
              xaxp=c(1,length(PlotGenes),4), ylab="PgEKu",
-             ylim=c(ylo, yhigh), col.lab="white");
+             ylim=c(ylo, yhigh), col.lab="white", cex.lab=1.5);
         title(main=paste("Cluster ", ClusterStartGene, "-", ClusterEndGene,
-                  "\n PKu = ", round(ClusterPKu[1], 5), sep=""), font=1);
+                  "\n PKu = ", round(ClusterPKu[1], 5), sep=""), font=2,
+                  cex.main=1.5);
+
         if (length(PlotGenes) > 25) {
             Interval <- trunc(length(PlotGenes)/5);
             PlotLabels <- PlotGenes[c(1,1:4*Interval, length(PlotGenes))];
@@ -1046,11 +916,12 @@ if (ClusterFound) {
         PlotGenesIndex <- 1:length(PlotGenes);
         plot(PlotGenesIndex, PlotPgKsub,
              col=Color, lwd=4, type='h', bty="n", xlab="Genes", xaxt='n',
-             xaxp=c(1,length(PlotGenes),4), ylab="P(g|Ksub)",
-             ylim=c(ylo, yhigh), col.lab="white");
+             xaxp=c(1,length(PlotGenes),4), ylab="P(g | Ksub)",
+             ylim=c(ylo, yhigh), col.lab="white", cex.lab=1.5);
         title(main=paste("Cluster ", ClusterStartGene, "-",
                   ClusterEndGene, "\n PKsub = ", round(ClusterPKsub[1], 5),
-                                                           sep=""), font=1);
+                                                 sep=""), font=2, cex.main=1.5);
+
         if (length(PlotGenes) > 25) {
             Interval <- trunc(length(PlotGenes)/5);
             PlotLabels <- PlotGenes[c(1,1:4*Interval, length(PlotGenes))];
@@ -1112,11 +983,13 @@ if (ClusterFound) {
 
         PlotGenesIndex <- 1:length(PlotGenes);
         plot(PlotGenesIndex, PlotPgKsub,
-             col=Color, lwd=4, type='h', bty="n", xlab="Genes", xaxt='n',
-             xaxp=c(1,length(PlotGenes),4), ylab="P(g|Ksub)",
-             ylim=c(ylo, yhigh), col.lab="white");
+             col=Color, lwd=2, type='h', bty="n", xlab="Genes", xaxt='n',
+             xaxp=c(1,length(PlotGenes),4), ylab="P(g | Ksub)",
+             ylim=c(ylo, yhigh), col.lab="white", cex.lab=1.5);
         title(main=paste("Cluster ", ClusterStartGene, "-", ClusterEndGene,
-                  "\n PKsub = ", round(ClusterPKsub[1], 5), sep=""), font=1);
+                  "\n PKsub = ", round(ClusterPKsub[1], 5), sep=""), font=2,
+                  cex.main=1.5);
+
         if (length(PlotGenes) > 25) {
             Interval <- trunc(length(PlotGenes)/5);
             PlotLabels <- PlotGenes[c(1,1:4*Interval, length(PlotGenes))];
@@ -1210,11 +1083,12 @@ if (ClusterFound) {
         PlotGenesIndex <- 1:length(PlotGenes);
         plot(PlotGenesIndex, PlotPgKmi,
              col=Color, lwd=4, type='h', bty="n", xlab="Genes", xaxt='n',
-             xaxp=c(1,length(PlotGenes),4), ylab="P(g|Kmi)",
-             ylim=c(ylo, yhigh), col.lab="white");
+             xaxp=c(1,length(PlotGenes),4), ylab="P(g | Kmi)",
+             ylim=c(ylo, yhigh), col.lab="white", cex.lab=1.5);
         title(main=paste("Cluster ", ClusterStartGene, "-",
                   ClusterEndGene, "\n PKmi = ", round(ClusterPKmi[1], 5),
-                                                           sep=""), font=1);
+                                                sep=""), font=2, cex.main=1.5);
+
         if (length(PlotGenes) > 25) {
             Interval <- trunc(length(PlotGenes)/5);
             PlotLabels <- PlotGenes[c(1,1:4*Interval, length(PlotGenes))];
@@ -1276,11 +1150,13 @@ if (ClusterFound) {
 
         PlotGenesIndex <- 1:length(PlotGenes);
         plot(PlotGenesIndex, PlotPgKmi,
-             col=Color, lwd=4, type='h', bty="n", xlab="Genes", xaxt='n',
-             xaxp=c(1,length(PlotGenes),4), ylab="P(g|Kmi)",
-             ylim=c(ylo, yhigh), col.lab="white");
+             col=Color, lwd=2, type='h', bty="n", xlab="Genes", xaxt='n',
+             xaxp=c(1,length(PlotGenes),4), ylab="P(g | Kmi)",
+             ylim=c(ylo, yhigh), col.lab="white", cex.lab=1.5);
         title(main=paste("Cluster ", ClusterStartGene, "-", ClusterEndGene,
-                  "\n PKmi = ", round(ClusterPKmi[1], 5), sep=""), font=1);
+                  "\n PKmi = ", round(ClusterPKmi[1], 5), sep=""), font=2,
+                  cex.main=1.5);
+        
         if (length(PlotGenes) > 25) {
             Interval <- trunc(length(PlotGenes)/5);
             PlotLabels <- PlotGenes[c(1,1:4*Interval, length(PlotGenes))];
@@ -1372,11 +1248,12 @@ if (ClusterFound) {
         PlotGenesIndex <- 1:length(PlotGenes);
         plot(PlotGenesIndex, PlotPgKet,
              col=Color, lwd=4, type='h', bty="n", xlab="Genes", xaxt='n',
-             xaxp=c(1,length(PlotGenes),4), ylab="P(g|Ket)",
-             ylim=c(ylo, yhigh), col.lab="white");
+             xaxp=c(1,length(PlotGenes),4), ylab="P(g | Ket)",
+             ylim=c(ylo, yhigh), col.lab="white", cex.lab=1.5);
         title(main=paste("Cluster ", ClusterStartGene, "-",
                   ClusterEndGene, "\n PKet = ", round(ClusterPKet[1], 5),
-                                                           sep=""), font=1);
+                                                sep=""), font=2, cex.main=1.5);
+
         if (length(PlotGenes) > 25) {
             Interval <- trunc(length(PlotGenes)/5);
             PlotLabels <- PlotGenes[c(1,1:4*Interval, length(PlotGenes))];
@@ -1439,11 +1316,12 @@ if (ClusterFound) {
 
         PlotGenesIndex <- 1:length(PlotGenes);
         plot(PlotGenesIndex, PlotPgKet,
-             col=Color, lwd=4, type='h', bty="n", xlab="Genes", xaxt='n',
-             xaxp=c(1,length(PlotGenes),4), ylab="P(g|Ket)",
-             ylim=c(ylo, yhigh), col.lab="white");
+             col=Color, lwd=2, type='h', bty="n", xlab="Genes", xaxt='n',
+             xaxp=c(1,length(PlotGenes),4), ylab="P(g | Ket)",
+             ylim=c(ylo, yhigh), col.lab="white", cex.lab=1.5);
         title(main=paste("Cluster ", ClusterStartGene, "-", ClusterEndGene,
-                  "\n PKet = ", round(ClusterPKet[1], 5), sep=""), font=1);
+                  "\n PKet = ", round(ClusterPKet[1], 5), sep=""), font=2,
+                  cex.main=1.5);
         if (length(PlotGenes) > 25) {
             Interval <- trunc(length(PlotGenes)/5);
             PlotLabels <- PlotGenes[c(1,1:4*Interval, length(PlotGenes))];
