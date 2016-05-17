@@ -277,98 +277,106 @@ yhigh <- trunc(max(PlotLogFoldChng)) + 1;
 if (yhigh < 1) {yhigh <- 1}
 
 if (OutToScreen) {
-  x11(width=PlotWidth, height=PlotHeight);
-  par(bg="black", fg="white", col.axis="white", col.lab="white", 
-    col.main="white");
+    OutToFile <- FALSE;
+    x11(width=PlotWidth, height=PlotHeight);
+    par(bg="black", fg="white", col.axis="white", col.lab="white", 
+        col.main="white");
 
-  PlotGenesIndex <- 1:length(PlotGenes);
-  plot(PlotGenesIndex, PlotLogFoldChng,
-       col=Color, lwd=4, type='h', bty="n", xlab="Genes", xaxt='n',
-       xaxp=c(1,length(PlotGenes),4), ylab="Log Fold Change",
-       ylim=c(ylo, yhigh), col.lab="white");
-  title(main=paste("Cluster ", ClusterStartGene, "-", ClusterEndGene,
-                   " / PKu(perm) = ", ClPermProb, sep=" "), font=1);
+    chh <-par()$cxy[2];
+    chw <-par()$cxy[2];
+    par(mar=c(5,5,5,5), omi=c(0.5,0.5,0.5,0.5));
 
-  if (length(PlotGenes) > 25) {
-    Interval <- trunc(length(PlotGenes)/5);
-    PlotLabels <- PlotGenes[c(1,1:4*Interval, length(PlotGenes))];
-    axis(1, at=c(1, 1:4*Interval, length(PlotGenes)), labels=PlotLabels);
+    par(mfrow=c(2,4));
 
-  } else {
-    Interval <- length(PlotGenes);
-    PlotLabels <- PlotGenes[c(1:length(PlotGenes))];
-    axis(1, at=c(1:length(PlotGenes)), labels=PlotLabels);
-  }
   
-  abline(h=0, col="white");    
-  abline(h=1, col="white", lty=2);
-  abline(h=-1, col="white", lty=2);
+    PlotGenesIndex <- 1:length(PlotGenes);
+    plot(PlotGenesIndex, PlotLogFoldChng,
+         col=Color, lwd=4, type='h', bty="n", xlab="Genes", xaxt='n',
+         xaxp=c(1,length(PlotGenes),4), ylab="Log Fold Change",
+         ylim=c(ylo, yhigh), col.lab="white");
+    title(main=paste("Cluster ", ClusterStartGene, "-", ClusterEndGene,
+              "\n PKu(perm) = ", ClPermProb, sep=" "), font=1);
 
-  if (PlotCluster) {    
-      rect(ClGenomeStartPos-PlotStartPos+1,
-           -RectHeight,
-           ClGenomeEndPos-PlotStartPos+1,
-           RectHeight,
-           border="yellow", col="yellow");
-  }
+    if (length(PlotGenes) > 25) {
+        Interval <- trunc(length(PlotGenes)/5);
+        PlotLabels <- PlotGenes[c(1,1:4*Interval, length(PlotGenes))];
+        axis(1, at=c(1, 1:4*Interval, length(PlotGenes)), labels=PlotLabels);
 
-  PlotPos <- 1:length(PlotGenes);
-  AbsentGenesPos <- PlotPos[as.logical(match(Color, "red", nomatch=0))];
-  AbsentGeneValues <- rep(0, length(AbsentGenesPos));
-  points(AbsentGenesPos, AbsentGeneValues, pch=4, lwd=2, cex=2, col="red")
+    } else {
+        Interval <- length(PlotGenes);
+        PlotLabels <- PlotGenes[c(1:length(PlotGenes))];
+        axis(1, at=c(1:length(PlotGenes)), labels=PlotLabels);
+    }
+    
+    abline(h=0, col="white");    
+    abline(h=1, col="white", lty=2);
+    abline(h=-1, col="white", lty=2);
+
+    if (PlotCluster) {    
+        rect(ClGenomeStartPos-PlotStartPos+1,
+             -RectHeight,
+             ClGenomeEndPos-PlotStartPos+1,
+             RectHeight,
+             border="yellow", col="yellow");
+    }
+
+    PlotPos <- 1:length(PlotGenes);
+    AbsentGenesPos <- PlotPos[as.logical(match(Color, "red", nomatch=0))];
+    AbsentGeneValues <- rep(0, length(AbsentGenesPos));
+    points(AbsentGenesPos, AbsentGeneValues, pch=4, lwd=2, cex=2, col="red")
   
-  if(Interactive) {
-    identify(PlotGenesIndex, PlotLogFoldChng, PlotGenes, col="white");  
-  }
+    if(Interactive) {
+        identify(PlotGenesIndex, PlotLogFoldChng, PlotGenes, col="white");  
+    }
 }
 
 
 if (OutToFile) {
 
-  postscript(file=paste(OutputDirectory, FileTitle, ".eps",
-             sep=""), horizontal=TRUE, onefile=TRUE);
+    postscript(file=paste(OutputDirectory, FileTitle, ".eps",
+                   sep=""), horizontal=TRUE, onefile=TRUE);
 
-  par(bg="black", fg="white", col.axis="white", col.lab="white", 
-    col.main="white");
+    par(bg="black", fg="white", col.axis="white", col.lab="white", 
+        col.main="white");
 
-  PlotGenesIndex <- 1:length(PlotGenes);
-  plot(PlotGenesIndex, PlotLogFoldChng,
-       col=Color, lwd=4, type='h', bty="n", xlab="Genes", xaxt='n',
-       xaxp=c(1,length(PlotGenes),4), ylab="Log Fold Change",
-       ylim=c(ylo, yhigh), col.lab="white");
-  title(main=paste("Cluster ", ClusterStartGene, "-", ClusterEndGene,
-                   " / PKu(perm) = ", ClPermProb, sep=" "), font=1);
+    PlotGenesIndex <- 1:length(PlotGenes);
+    plot(PlotGenesIndex, PlotLogFoldChng,
+         col=Color, lwd=4, type='h', bty="n", xlab="Genes", xaxt='n',
+         xaxp=c(1,length(PlotGenes),4), ylab="Log Fold Change",
+         ylim=c(ylo, yhigh), col.lab="white");
+    title(main=paste("Cluster ", ClusterStartGene, "-", ClusterEndGene,
+              "\n PKu(perm) = ", ClPermProb, sep=" "), font=1);
 
 
-  if (length(PlotGenes) > 25) {
-    Interval <- trunc(length(PlotGenes)/5);
-    PlotLabels <- PlotGenes[c(1,1:4*Interval, length(PlotGenes))];
-    axis(1, at=c(1, 1:4*Interval, length(PlotGenes)), labels=PlotLabels);
+    if (length(PlotGenes) > 25) {
+        Interval <- trunc(length(PlotGenes)/5);
+        PlotLabels <- PlotGenes[c(1,1:4*Interval, length(PlotGenes))];
+        axis(1, at=c(1, 1:4*Interval, length(PlotGenes)), labels=PlotLabels);
 
-  } else {
-    Interval <- length(PlotGenes);
-    PlotLabels <- PlotGenes[c(1:length(PlotGenes))];
-    axis(1, at=c(1:length(PlotGenes)), labels=PlotLabels);
-  }
+    } else {
+        Interval <- length(PlotGenes);
+        PlotLabels <- PlotGenes[c(1:length(PlotGenes))];
+        axis(1, at=c(1:length(PlotGenes)), labels=PlotLabels);
+    }
   
-  abline(h=0, col="white");    
-  abline(h=1, col="white", lty=2);
-  abline(h=-1, col="white", lty=2);
+    abline(h=0, col="white");    
+    abline(h=1, col="white", lty=2);
+    abline(h=-1, col="white", lty=2);
 
-  if (PlotCluster) {    
-      rect(ClGenomeStartPos-PlotStartPos+1,
-           -RectHeight,
-           ClGenomeEndPos-PlotStartPos+1,
-           RectHeight,
-           border="yellow", col="yellow");
-  }
+    if (PlotCluster) {    
+        rect(ClGenomeStartPos-PlotStartPos+1,
+             -RectHeight,
+             ClGenomeEndPos-PlotStartPos+1,
+             RectHeight,
+             border="yellow", col="yellow");
+    }
 
-  PlotPos <- 1:length(PlotGenes);
-  AbsentGenesPos <- PlotPos[as.logical(match(Color, "red", nomatch=0))];
-  AbsentGeneValues <- rep(0, length(AbsentGenesPos));
-  points(AbsentGenesPos, AbsentGeneValues, pch=4, lwd=2, cex=2, col="red")
+    PlotPos <- 1:length(PlotGenes);
+    AbsentGenesPos <- PlotPos[as.logical(match(Color, "red", nomatch=0))];
+    AbsentGeneValues <- rep(0, length(AbsentGenesPos));
+    points(AbsentGenesPos, AbsentGeneValues, pch=4, lwd=2, cex=2, col="red")
 
-  dev.off()
+    #dev.off()
 }
 
 ############# Plot PKu-Pg for a given PKu  ###############
@@ -401,9 +409,9 @@ if (ClusterFound) {
 
     if (OutToScreen) {
 
-        x11(width=PlotWidth, height=PlotHeight);
-        par(bg="black", fg="white", col.axis="white", col.lab="white", 
-            col.main="white");
+#        x11(width=PlotWidth, height=PlotHeight);
+#        par(bg="black", fg="white", col.axis="white", col.lab="white", 
+#            col.main="white");
 
         PlotGenesIndex <- 1:length(PlotGenes);
         plot(PlotGenesIndex, PlotPKumPg,
@@ -411,7 +419,7 @@ if (ClusterFound) {
              xaxp=c(1,length(PlotGenes),4), ylab="PKu - Pg",
              ylim=c(ylo, yhigh), col.lab="white");
         title(main=paste("Cluster ", ClusterStartGene, "-",
-                  ClusterEndGene, " / PKu = ", round(ClusterPKu[1], 5),
+                  ClusterEndGene, "\n PKu = ", round(ClusterPKu[1], 5),
                                                            sep=""), font=1);
         if (length(PlotGenes) > 25) {
             Interval <- trunc(length(PlotGenes)/5);
@@ -458,10 +466,10 @@ if (ClusterFound) {
 
     if (OutToFile) {
 
-        postscript(file=paste(OutputDirectory, FileTitle, ".eps",
-             sep=""), horizontal=TRUE, onefile=TRUE);
-        par(bg="black", fg="white", col.axis="white", col.lab="white", 
-            col.main="white");
+#        postscript(file=paste(OutputDirectory, FileTitle, ".eps",
+#             sep=""), horizontal=TRUE, onefile=TRUE);
+#        par(bg="black", fg="white", col.axis="white", col.lab="white", 
+#            col.main="white");
 
         PlotGenesIndex <- 1:length(PlotGenes);
         plot(PlotGenesIndex, PlotPKumPg,
@@ -469,7 +477,7 @@ if (ClusterFound) {
              xaxp=c(1,length(PlotGenes),4), ylab="PKu - Pg",
              ylim=c(ylo, yhigh), col.lab="white");
         title(main=paste("Cluster ", ClusterStartGene, "-", ClusterEndGene,
-                  " / PKu = ", round(ClusterPKu[1], 5), sep=""), font=1);
+                  "\n PKu = ", round(ClusterPKu[1], 5), sep=""), font=1);
         if (length(PlotGenes) > 25) {
             Interval <- trunc(length(PlotGenes)/5);
             PlotLabels <- PlotGenes[c(1,1:4*Interval, length(PlotGenes))];
@@ -506,7 +514,7 @@ if (ClusterFound) {
         points(NonClusterGenesPos, NonClusterGeneValues, pch=4, lwd=2, cex=2,
                col="blue")
   
-        dev.off()
+ #       dev.off()
     }
 
 } else {
@@ -546,9 +554,9 @@ if (ClusterFound) {
 
     if (OutToScreen) {
 
-        x11(width=PlotWidth, height=PlotHeight);
-        par(bg="black", fg="white", col.axis="white", col.lab="white", 
-            col.main="white");
+#        x11(width=PlotWidth, height=PlotHeight);
+#        par(bg="black", fg="white", col.axis="white", col.lab="white", 
+#            col.main="white");
 
         PlotGenesIndex <- 1:length(PlotGenes);
         plot(PlotGenesIndex, PlotPgKu,
@@ -556,7 +564,7 @@ if (ClusterFound) {
              xaxp=c(1,length(PlotGenes),4), ylab="P(g|Ku)",
              ylim=c(ylo, yhigh), col.lab="white");
         title(main=paste("Cluster ", ClusterStartGene, "-",
-                  ClusterEndGene, " / PKu = ", round(ClusterPKu[1], 5),
+                  ClusterEndGene, "\n PKu = ", round(ClusterPKu[1], 5),
                                                            sep=""), font=1);
         if (length(PlotGenes) > 25) {
             Interval <- trunc(length(PlotGenes)/5);
@@ -612,10 +620,10 @@ if (ClusterFound) {
 
     if (OutToFile) {
 
-        postscript(file=paste(OutputDirectory, FileTitle, ".eps",
-             sep=""), horizontal=TRUE, onefile=TRUE);
-        par(bg="black", fg="white", col.axis="white", col.lab="white", 
-            col.main="white");
+#        postscript(file=paste(OutputDirectory, FileTitle, ".eps",
+#             sep=""), horizontal=TRUE, onefile=TRUE);
+#        par(bg="black", fg="white", col.axis="white", col.lab="white", 
+#            col.main="white");
 
         PlotGenesIndex <- 1:length(PlotGenes);
         plot(PlotGenesIndex, PlotPgKu,
@@ -623,7 +631,7 @@ if (ClusterFound) {
              xaxp=c(1,length(PlotGenes),4), ylab="P(g|Ku)",
              ylim=c(ylo, yhigh), col.lab="white");
         title(main=paste("Cluster ", ClusterStartGene, "-", ClusterEndGene,
-                  " / PKu = ", round(ClusterPKu[1], 5), sep=""), font=1);
+                  "\n PKu = ", round(ClusterPKu[1], 5), sep=""), font=1);
         if (length(PlotGenes) > 25) {
             Interval <- trunc(length(PlotGenes)/5);
             PlotLabels <- PlotGenes[c(1,1:4*Interval, length(PlotGenes))];
@@ -669,7 +677,7 @@ if (ClusterFound) {
         points(NonClusterGenesPos, NonClusterGeneValues, pch=4, lwd=2, cex=2,
                col="blue")
   
-        dev.off()
+#        dev.off()
     }
 
 } else {
@@ -708,9 +716,9 @@ if (ClusterFound) {
 
     if (OutToScreen) {
 
-        x11(width=PlotWidth, height=PlotHeight);
-        par(bg="black", fg="white", col.axis="white", col.lab="white", 
-            col.main="white");
+#        x11(width=PlotWidth, height=PlotHeight);
+#        par(bg="black", fg="white", col.axis="white", col.lab="white", 
+#            col.main="white");
 
         PlotGenesIndex <- 1:length(PlotGenes);
         plot(PlotGenesIndex, PlotPgIKu,
@@ -718,7 +726,7 @@ if (ClusterFound) {
              xaxp=c(1,length(PlotGenes),4), ylab="PgIKu",
              ylim=c(ylo, yhigh), col.lab="white");
         title(main=paste("Cluster ", ClusterStartGene, "-",
-                  ClusterEndGene, " / PKu = ", round(ClusterPKu[1], 5),
+                  ClusterEndGene, "\n PKu = ", round(ClusterPKu[1], 5),
                                                            sep=""), font=1);
         if (length(PlotGenes) > 25) {
             Interval <- trunc(length(PlotGenes)/5);
@@ -774,10 +782,10 @@ if (ClusterFound) {
 
     if (OutToFile) {
 
-        postscript(file=paste(OutputDirectory, FileTitle, ".eps",
-             sep=""), horizontal=TRUE, onefile=TRUE);
-        par(bg="black", fg="white", col.axis="white", col.lab="white", 
-            col.main="white");
+#        postscript(file=paste(OutputDirectory, FileTitle, ".eps",
+#             sep=""), horizontal=TRUE, onefile=TRUE);
+#        par(bg="black", fg="white", col.axis="white", col.lab="white", 
+#            col.main="white");
 
         PlotGenesIndex <- 1:length(PlotGenes);
         plot(PlotGenesIndex, PlotPgIKu,
@@ -785,7 +793,7 @@ if (ClusterFound) {
              xaxp=c(1,length(PlotGenes),4), ylab="PgIKu",
              ylim=c(ylo, yhigh), col.lab="white");
         title(main=paste("Cluster ", ClusterStartGene, "-", ClusterEndGene,
-                  " / PKu = ", round(ClusterPKu[1], 5), sep=""), font=1);
+                  "\n PKu = ", round(ClusterPKu[1], 5), sep=""), font=1);
         if (length(PlotGenes) > 25) {
             Interval <- trunc(length(PlotGenes)/5);
             PlotLabels <- PlotGenes[c(1,1:4*Interval, length(PlotGenes))];
@@ -831,7 +839,7 @@ if (ClusterFound) {
         points(NonClusterGenesPos, NonClusterGeneValues, pch=4, lwd=2, cex=2,
                col="blue")
   
-        dev.off()
+#        dev.off()
     }
 
 } else {
@@ -871,9 +879,9 @@ if (ClusterFound) {
 
     if (OutToScreen) {
 
-        x11(width=PlotWidth, height=PlotHeight);
-        par(bg="black", fg="white", col.axis="white", col.lab="white", 
-            col.main="white");
+#        x11(width=PlotWidth, height=PlotHeight);
+#        par(bg="black", fg="white", col.axis="white", col.lab="white", 
+#            col.main="white");
 
         PlotGenesIndex <- 1:length(PlotGenes);
         plot(PlotGenesIndex, PlotPgEKu,
@@ -881,7 +889,7 @@ if (ClusterFound) {
              xaxp=c(1,length(PlotGenes),4), ylab="PgEKu",
              ylim=c(ylo, yhigh), col.lab="white");
         title(main=paste("Cluster ", ClusterStartGene, "-",
-                  ClusterEndGene, " / PKu = ", round(ClusterPKu[1], 5),
+                  ClusterEndGene, "\n PKu = ", round(ClusterPKu[1], 5),
                                                            sep=""), font=1);
         if (length(PlotGenes) > 25) {
             Interval <- trunc(length(PlotGenes)/5);
@@ -936,10 +944,10 @@ if (ClusterFound) {
 
     if (OutToFile) {
 
-        postscript(file=paste(OutputDirectory, FileTitle, ".eps",
-             sep=""), horizontal=TRUE, onefile=TRUE);
-        par(bg="black", fg="white", col.axis="white", col.lab="white", 
-            col.main="white");
+#        postscript(file=paste(OutputDirectory, FileTitle, ".eps",
+#             sep=""), horizontal=TRUE, onefile=TRUE);
+#        par(bg="black", fg="white", col.axis="white", col.lab="white", 
+#            col.main="white");
 
         PlotGenesIndex <- 1:length(PlotGenes);
         plot(PlotGenesIndex, PlotPgEKu,
@@ -947,7 +955,7 @@ if (ClusterFound) {
              xaxp=c(1,length(PlotGenes),4), ylab="PgEKu",
              ylim=c(ylo, yhigh), col.lab="white");
         title(main=paste("Cluster ", ClusterStartGene, "-", ClusterEndGene,
-                  " / PKu = ", round(ClusterPKu[1], 5), sep=""), font=1);
+                  "\n PKu = ", round(ClusterPKu[1], 5), sep=""), font=1);
         if (length(PlotGenes) > 25) {
             Interval <- trunc(length(PlotGenes)/5);
             PlotLabels <- PlotGenes[c(1,1:4*Interval, length(PlotGenes))];
@@ -992,7 +1000,7 @@ if (ClusterFound) {
         points(NonClusterGenesPos, NonClusterGeneValues, pch=4, lwd=2, cex=2,
                col="blue")
   
-        dev.off()
+#        dev.off()
     }
 
 } else {
@@ -1031,9 +1039,9 @@ if (ClusterFound) {
 
     if (OutToScreen) {
 
-        x11(width=PlotWidth, height=PlotHeight);
-        par(bg="black", fg="white", col.axis="white", col.lab="white", 
-            col.main="white");
+ #       x11(width=PlotWidth, height=PlotHeight);
+ #       par(bg="black", fg="white", col.axis="white", col.lab="white", 
+ #           col.main="white");
 
         PlotGenesIndex <- 1:length(PlotGenes);
         plot(PlotGenesIndex, PlotPgKsub,
@@ -1041,7 +1049,7 @@ if (ClusterFound) {
              xaxp=c(1,length(PlotGenes),4), ylab="P(g|Ksub)",
              ylim=c(ylo, yhigh), col.lab="white");
         title(main=paste("Cluster ", ClusterStartGene, "-",
-                  ClusterEndGene, " / PKsub = ", round(ClusterPKsub[1], 5),
+                  ClusterEndGene, "\n PKsub = ", round(ClusterPKsub[1], 5),
                                                            sep=""), font=1);
         if (length(PlotGenes) > 25) {
             Interval <- trunc(length(PlotGenes)/5);
@@ -1097,10 +1105,10 @@ if (ClusterFound) {
 
     if (OutToFile) {
 
-        postscript(file=paste(OutputDirectory, FileTitle, ".eps",
-             sep=""), horizontal=TRUE, onefile=TRUE);
-        par(bg="black", fg="white", col.axis="white", col.lab="white", 
-            col.main="white");
+#        postscript(file=paste(OutputDirectory, FileTitle, ".eps",
+#             sep=""), horizontal=TRUE, onefile=TRUE);
+#        par(bg="black", fg="white", col.axis="white", col.lab="white", 
+#            col.main="white");
 
         PlotGenesIndex <- 1:length(PlotGenes);
         plot(PlotGenesIndex, PlotPgKsub,
@@ -1108,7 +1116,7 @@ if (ClusterFound) {
              xaxp=c(1,length(PlotGenes),4), ylab="P(g|Ksub)",
              ylim=c(ylo, yhigh), col.lab="white");
         title(main=paste("Cluster ", ClusterStartGene, "-", ClusterEndGene,
-                  " / PKsub = ", round(ClusterPKsub[1], 5), sep=""), font=1);
+                  "\n PKsub = ", round(ClusterPKsub[1], 5), sep=""), font=1);
         if (length(PlotGenes) > 25) {
             Interval <- trunc(length(PlotGenes)/5);
             PlotLabels <- PlotGenes[c(1,1:4*Interval, length(PlotGenes))];
@@ -1154,7 +1162,7 @@ if (ClusterFound) {
         points(NonClusterGenesPos, NonClusterGeneValues, pch=4, lwd=2, cex=2,
                col="blue")
   
-        dev.off()
+#        dev.off()
     }
 
 } else {
@@ -1195,9 +1203,9 @@ if (ClusterFound) {
 
     if (OutToScreen) {
 
-        x11(width=PlotWidth, height=PlotHeight);
-        par(bg="black", fg="white", col.axis="white", col.lab="white", 
-            col.main="white");
+#        x11(width=PlotWidth, height=PlotHeight);
+#        par(bg="black", fg="white", col.axis="white", col.lab="white", 
+#            col.main="white");
 
         PlotGenesIndex <- 1:length(PlotGenes);
         plot(PlotGenesIndex, PlotPgKmi,
@@ -1205,7 +1213,7 @@ if (ClusterFound) {
              xaxp=c(1,length(PlotGenes),4), ylab="P(g|Kmi)",
              ylim=c(ylo, yhigh), col.lab="white");
         title(main=paste("Cluster ", ClusterStartGene, "-",
-                  ClusterEndGene, " / PKmi = ", round(ClusterPKmi[1], 5),
+                  ClusterEndGene, "\n PKmi = ", round(ClusterPKmi[1], 5),
                                                            sep=""), font=1);
         if (length(PlotGenes) > 25) {
             Interval <- trunc(length(PlotGenes)/5);
@@ -1261,10 +1269,10 @@ if (ClusterFound) {
 
     if (OutToFile) {
 
-        postscript(file=paste(OutputDirectory, FileTitle, ".eps",
-             sep=""), horizontal=TRUE, onefile=TRUE);
-        par(bg="black", fg="white", col.axis="white", col.lab="white", 
-            col.main="white");
+#        postscript(file=paste(OutputDirectory, FileTitle, ".eps",
+#             sep=""), horizontal=TRUE, onefile=TRUE);
+#        par(bg="black", fg="white", col.axis="white", col.lab="white", 
+#            col.main="white");
 
         PlotGenesIndex <- 1:length(PlotGenes);
         plot(PlotGenesIndex, PlotPgKmi,
@@ -1272,7 +1280,7 @@ if (ClusterFound) {
              xaxp=c(1,length(PlotGenes),4), ylab="P(g|Kmi)",
              ylim=c(ylo, yhigh), col.lab="white");
         title(main=paste("Cluster ", ClusterStartGene, "-", ClusterEndGene,
-                  " / PKmi = ", round(ClusterPKmi[1], 5), sep=""), font=1);
+                  "\n PKmi = ", round(ClusterPKmi[1], 5), sep=""), font=1);
         if (length(PlotGenes) > 25) {
             Interval <- trunc(length(PlotGenes)/5);
             PlotLabels <- PlotGenes[c(1,1:4*Interval, length(PlotGenes))];
@@ -1318,7 +1326,7 @@ if (ClusterFound) {
         points(NonClusterGenesPos, NonClusterGeneValues, pch=4, lwd=2, cex=2,
                col="blue")
   
-        dev.off()
+#        dev.off()
     }
 
 } else {
@@ -1357,9 +1365,9 @@ if (ClusterFound) {
 
     if (OutToScreen) {
 
-        x11(width=PlotWidth, height=PlotHeight);
-        par(bg="black", fg="white", col.axis="white", col.lab="white", 
-            col.main="white");
+#        x11(width=PlotWidth, height=PlotHeight);
+#        par(bg="black", fg="white", col.axis="white", col.lab="white", 
+#            col.main="white");
 
         PlotGenesIndex <- 1:length(PlotGenes);
         plot(PlotGenesIndex, PlotPgKet,
@@ -1367,7 +1375,7 @@ if (ClusterFound) {
              xaxp=c(1,length(PlotGenes),4), ylab="P(g|Ket)",
              ylim=c(ylo, yhigh), col.lab="white");
         title(main=paste("Cluster ", ClusterStartGene, "-",
-                  ClusterEndGene, " / PKet = ", round(ClusterPKet[1], 5),
+                  ClusterEndGene, "\n PKet = ", round(ClusterPKet[1], 5),
                                                            sep=""), font=1);
         if (length(PlotGenes) > 25) {
             Interval <- trunc(length(PlotGenes)/5);
@@ -1424,10 +1432,10 @@ if (ClusterFound) {
 
     if (OutToFile) {
 
-        postscript(file=paste(OutputDirectory, FileTitle, ".eps",
-             sep=""), horizontal=TRUE, onefile=TRUE);
-        par(bg="black", fg="white", col.axis="white", col.lab="white", 
-            col.main="white");
+#        postscript(file=paste(OutputDirectory, FileTitle, ".eps",
+#             sep=""), horizontal=TRUE, onefile=TRUE);
+#        par(bg="black", fg="white", col.axis="white", col.lab="white", 
+#            col.main="white");
 
         PlotGenesIndex <- 1:length(PlotGenes);
         plot(PlotGenesIndex, PlotPgKet,
@@ -1435,7 +1443,7 @@ if (ClusterFound) {
              xaxp=c(1,length(PlotGenes),4), ylab="P(g|Ket)",
              ylim=c(ylo, yhigh), col.lab="white");
         title(main=paste("Cluster ", ClusterStartGene, "-", ClusterEndGene,
-                  " / PKet = ", round(ClusterPKet[1], 5), sep=""), font=1);
+                  "\n PKet = ", round(ClusterPKet[1], 5), sep=""), font=1);
         if (length(PlotGenes) > 25) {
             Interval <- trunc(length(PlotGenes)/5);
             PlotLabels <- PlotGenes[c(1,1:4*Interval, length(PlotGenes))];

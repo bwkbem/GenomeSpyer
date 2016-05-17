@@ -11,15 +11,16 @@ ExtraGenes <- 8;
 #PlotTitle <- "";  #created in plot
 
 PlotCluster <- TRUE;
-OutToScreen <- TRUE;
 Interactive <- FALSE;
 
-OutToFile <- TRUE;
+OutToScreen <- TRUE; # Can only set one output destination if both true then
+OutToFile <- FALSE;  # will print to screen only
+
 FileTitle <- "Spyer";
 
 RectHeight <- 0.015;
 
-PlotWidth <- 11;
+PlotWidth <- 14;
 PlotHeight <- 8;
 
             ################# INPUT / OUTPUT PATHS #################
